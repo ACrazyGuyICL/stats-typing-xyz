@@ -32,3 +32,8 @@ wss.on('connection', (ws, req) => {
 app.get('/onlineUsers', (req, res) => {
   res.json({ onlineUsers: connections.size });
 });
+
+app.get('/', (req, res) => {
+    res.json({ onlineUsers: connections.size });
+  });
+  
