@@ -10,29 +10,23 @@ const server = app.listen(3000, () => {
 });
 
 const wss = new WebSocket.Server({ server });
-let onlineUsers = 0;
-const connections = new Set();
+const connections = new Map();
 
 wss.on('connection', (ws, req) => {
-  // Store the IP address to prevent duplicate connections
   const ip = req.connection.remoteAddress;
+  connections.set(ws, ip);
+  console.log(`New WebSocket connection from ${ip}. Online users: ${connections.size}`);
 
-  if (connections.has(ip)) {
-    ws.terminate(); // Close the WebSocket connection if already connected
-    return;
-  }
-
-  connections.add(ip);
-  onlineUsers++;
-  console.log(`New WebSocket connection from ${ip}. Online users: ${onlineUsers}`);
+  ws.on('message', (message) => {
+    console.log(`Received message from ${ip}: ${message}`);
+  });
 
   ws.on('close', () => {
-    connections.delete(ip);
-    onlineUsers--;
-    console.log(`WebSocket connection closed from ${ip}. Online users: ${onlineUsers}`);
+    connections.delete(ws);
+    console.log(`WebSocket connection closed from ${ip}. Online users: ${connections.size}`);
   });
 });
 
 app.get('/onlineUsers', (req, res) => {
-  res.json({ onlineUsers });
+  res.json({ onlineUsers: connections.size });
 });
