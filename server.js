@@ -2,10 +2,12 @@ const express = require('express');
 const WebSocket = require('ws');
 const cors = require('cors');
 
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 app.use(cors()); // Enable CORS for all routes
 
-const server = app.listen(process.env.PORT, () => {
+const server = app.listen(PORT, () => {
   console.log('Server started on port 3000');
 });
 
